@@ -1,0 +1,229 @@
+    <!-- OpenStreet Map -->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+      <!-- Make sure you put this AFTER Leaflet's CSS -->
+      <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+      <script src="../js/leaflet-color-markers.js"></script>
+      <script src="../socket.io/socket.io.js"></script>
+
+
+</head>
+<body>
+   <audio id="error">
+     <source src="../sounds/AircraftAlarm.mp3" type="audio/mpeg">
+   </audio>
+
+   <audio id="success">
+     <source src="../sounds/success.wav" type="audio/mpeg">
+   </audio>
+
+    <section class="contenedor">
+
+        <div class="columna1">
+            <div id="mapid" class="mapid"></div>
+        </div>
+
+        <div class="form-popup" id="formAcciones">
+          <div  class="form-container">
+            <h5 id="nombrePozo">Nombre del pozo</h5>
+
+            <button class="btn btn-info botones" onclick="encender()">Encender</button>
+            <button class="btn btn-info botones" onclick="apagar()">Apagar</button>
+            <button class="btn btn-info botones" onclick="llamar()">Llamar</button>
+
+          </div>
+        </div>
+
+    </section>
+
+    <script>
+        var error = document.getElementById("error");  
+        var success = document.getElementById("success");  
+        
+ 
+        var formAcciones = document.getElementById("formAcciones"); 
+        var decodedJson = decodeURIComponent("{{{encodedJson}}}");
+        var pozos = JSON.parse(decodedJson);
+
+        var mymap = L.map('mapid').setView([-33.0055, -58.525], 13);
+        mymap.on('click', onMapClick);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' + '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' + 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox/streets-v11'
+        }).addTo(mymap);
+
+        var marcadores = [];
+        var estadoPozo;
+        var estiloPopup;
+
+        for (i in pozos){
+            marcadores.push(
+               marker = L.marker([pozos[i].coord.lat,pozos[i].coord.lng], {
+                   icon: greenIcon
+                }).addTo(mymap)
+            );
+            
+            estiloPopup = 'stylePopupNormal';
+            switch(pozos[i].estado_pozo) {
+              case '0':
+                 marcadores[i].setIcon(goldIcon);
+                 estadoPozo = 'Sin monitoreo automático';
+                break;
+              case '1':
+                 marcadores[i].setIcon(greenIcon);
+                 estadoPozo = 'En servicio';
+                break;
+              case '2':
+                marcadores[i].setIcon(greyIcon);
+                 estadoPozo = 'Fuera de servicio';
+                break;
+              case '3':
+                 marcadores[i].setIcon(redIcon);
+                 estadoPozo = '¡ Con problemas !';
+                 estiloPopup = 'stylePopupError';
+            };
+
+
+            marcadores[i].bindPopup('<b>'+pozos[i].nombre+'</b><br>'+estadoPozo, {
+              className: estiloPopup
+            });
+
+            marcadores[i].on('mouseover', function(e) {
+                if (formAcciones.style.display != "block" ) {
+                    this.openPopup();
+                };    
+            });
+
+            marcadores[i].on('mouseout', function(e) {
+                if (formAcciones.style.display != "block" ) {
+                    this.closePopup();
+                };
+
+
+            });
+
+            let idMarcador =  pozos[i]._id;
+            marcadores[i].on("click", function(e) { markerOnClick(e, idMarcador); });
+        };
+
+        // console.log(jsonPozos);
+        //  mymap.flyTo([-33.020736, -58.518211], 15);     // lleva el mapa a las coordenadas (15 es el zoom)
+
+        //document.getElementById("myAudio").play();   // reproduce el sonido
+
+        function markerOnClick(e, idPozoClickeado) {
+
+            if (formAcciones.style.display === "none" || formAcciones.style.display === "") {
+                formAcciones.style.display = "block";
+            };
+
+            for (i in pozos){
+                if (pozos[i]._id === idPozoClickeado){
+                     marcadores[i].openPopup();
+
+                     document.getElementById("nombrePozo").innerHTML = pozos[i].nombre;
+
+                    switch(pozos[i].estado) {
+                      case '1':
+                         {{!-- document.getElementById("estadoPozo").innerHTML = "EN SERVICIO";
+                         document.getElementById("estadoPozo").className = "enServicio"; --}}
+                        break;
+                      case '2':
+                         {{!-- document.getElementById("estadoPozo").innerHTML = "FUERA DE SERVICIO";
+                         document.getElementById("estadoPozo").className = "fueraServicio"; --}}
+                        break;
+                      case '3':
+                         {{!-- document.getElementById("estadoPozo").innerHTML = "FUERA DE LINEA";
+                         document.getElementById("estadoPozo").className = "error"; --}}
+                    };
+                };
+            };
+        };        
+
+        function encender(){
+           var r = confirm("¿Realmente desea encender?");
+           if (r == true) {
+           } else {
+           }
+        };
+
+        function apagar(){
+           var r = confirm("¿Realmente desea apagar?");
+           if (r == true) {
+           } else {
+           }
+        };
+
+        function llamar(){
+           var r = confirm("¿Realmente desea llamar?");
+           if (r == true) {
+           } else {
+           }
+        };
+
+        function cerrar(){
+           document.getElementById("formAcciones").style.display = "none"; 
+
+        };
+
+        function onMapClick(){
+           document.getElementById("formAcciones").style.display = "none"; 
+        };
+
+        var socket = io();
+
+        // los on son para recibir mensajes o escuchar eventos
+        socket.on('connect', function() {
+            console.log('conectado al servidor');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Se perdio la conexion con el servidor');
+        });
+
+        socket.on('enviarMensaje', function(mensaje) {
+          var fases = '<br><br>Fase 1: '+mensaje.estadoPozo.f1 + 'v ' +
+                      '<br>Fase 2: '+mensaje.estadoPozo.f2 + 'v ' +
+                      '<br>Fase 3: '+mensaje.estadoPozo.f3 + 'v ';
+
+           estiloPopup = 'stylePopupNormal';
+
+            for (i in pozos){
+                if (pozos[i]._id === mensaje.estadoPozo.id){
+                    switch(mensaje.estadoPozo.estado) {
+                      case '1':
+                        estadoPozo = 'En produccion';
+                        marcadores[i].setIcon(greenIcon);
+                        break;
+                      case '2':
+                        estadoPozo = 'Fuera de servicio';
+                        marcadores[i].setIcon(greyIcon);
+                        break;
+                      case '3':
+                        marcadores[i].setIcon(redIcon);
+                        estadoPozo = '! Con problemas !';
+                        estiloPopup = 'stylePopupError';
+
+                    };
+
+                    marcadores[i].bindPopup('<b>'+pozos[i].nombre+'</b><br>'+estadoPozo+fases, {
+                      className: estiloPopup
+                    });
+
+                    if (mensaje.estadoPozo.estado === '3'){
+                      error.play();
+                      marcadores[i].openPopup()
+                    }else{
+                      success.play();
+                      marcadores[i].openPopup()
+                    };
+
+                };
+            };
+
+          console.log(mensaje.estadoPozo.id);
+        })
+
+
+    </script>

@@ -1,0 +1,121 @@
+/* OpenStreet maps */
+
+
+/* style="width: 100%; height: 600px; font-size: medium;" */
+
+.mapid {
+    width: 100%;
+    height: 100%;
+    font-size: medium;
+}
+
+.contenedor {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    font-family: 'Lato', sans-serif;
+}
+
+.columna1 {
+    background: #F6FEFF;
+    border: 1px solid #333;
+    margin: 5px;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 5px 5px 4px rgb(124, 120, 120);
+    width: 98%;
+    height: 98%;
+    position: absolute;
+    z-index: 1;
+}
+
+.botones {
+    width: 100px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.enServicio {
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    color: green;
+    font-weight: bold;
+}
+
+.fueraServicio {
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    color: gray;
+    font-weight: bold;
+}
+
+.error {
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    color: red;
+    font-weight: bold;
+}
+
+.stylePopupNormal .leaflet-popup-content-wrapper,
+.stylePopupNormal .leaflet-popup-tip {
+    text-align: center;
+    padding: 5px;
+}
+
+.stylePopupError .leaflet-popup-content-wrapper,
+.stylePopupError .leaflet-popup-tip {
+    background-color: #FF0000;
+    color: #F6FEFF;
+    text-align: center;
+    padding: 5px;
+}
+
+
+/* A PARTIR DE ACA ESTILOS DEL FORMULARIO POPUP DE MAPAS
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+
+.open-button {
+    background-color: #555;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+}
+
+
+/* The popup form - hidden by default */
+
+.form-popup {
+    display: none;
+    height: auto;
+    left: 50%;
+    width: 50%;
+    margin-left: -25%;
+    bottom: 30px;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+    position: absolute;
+}
+
+
+/* Add styles to the form container */
+
+.form-container {
+    text-align: center;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    background: rgb(224, 251, 255);
+    background: linear-gradient(180deg, rgba(224, 251, 255, 1) 0%, rgba(224, 251, 255, 1) 50%, rgba(168, 237, 251, 1) 100%);
+}
